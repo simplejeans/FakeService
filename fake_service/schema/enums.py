@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class SchemaColumnTypeEnum(Enum):
-    FULL_NAME = "full_name"
+    FULL_NAME = "name"
     INTEGER = "integer"
     JOB = "job"
     EMAIL = "email"

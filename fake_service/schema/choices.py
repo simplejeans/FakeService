@@ -1,4 +1,8 @@
-from .enums import SchemaColumnTypeEnum, SchemaColumnSeparatorEnum, SchemaStringCharacterEnum
+from .enums import (
+    SchemaColumnTypeEnum,
+    SchemaColumnSeparatorEnum,
+    SchemaStringCharacterEnum,
+)
 
 SCHEMA_COLUMN_TYPE = (
     (SchemaColumnTypeEnum.FULL_NAME.value, "Full Name"),
