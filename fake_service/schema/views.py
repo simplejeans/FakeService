@@ -2,29 +2,23 @@ from rest_framework import views, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-from .serializers import CreateSchemaSerializer, DatasetSerializer
-from .models import Schema, Dataset
-from .services import SchemaCreate, start_download_dataset_task
+from schema.serializers import CreateSchemaSerializer, DatasetSerializer
+from schema.models import Schema, Dataset
 from django.core.cache import cache
-from .renderers import PassthroughRenderer
+from schema.renderers import PassthroughRenderer
 from django.http import FileResponse
+from schema.tasks import start_download_dataset_task
 
 
 class SchemaAPIView(ModelViewSet):
     queryset = Schema.objects.all()
     serializer_class = CreateSchemaSerializer
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        response = SchemaCreate(data=request.data, user=request.user).create_schema
-        return Response(response)
-
     @action(detail=True, methods=["post"])
     def generate_data(self, request, pk) -> Response:
         count = request.query_params.get("count", 1)
-        cache_task_key = start_download_dataset_task(user_id=request.user.id, schema_id=pk, count=count)
-        return Response({"Cache task key is": f"{cache_task_key}"}, status=status.HTTP_201_CREATED)
+        cache_task_key = start_download_dataset_task(user_id=request.user.id, schema_id=pk, row_nums=count)
+        return Response({"cache_key": cache_task_key}, status=status.HTTP_201_CREATED)
 
 
 class DataSetView(ModelViewSet):
