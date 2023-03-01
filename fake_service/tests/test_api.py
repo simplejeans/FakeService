@@ -1,6 +1,7 @@
+import pytest
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
-from schema.models import User, Schema
+from schema.models import User, Schema, Dataset
 
 
 class SchemaApiTestCase(APITestCase):
@@ -8,19 +9,17 @@ class SchemaApiTestCase(APITestCase):
         self.user = User.objects.create(username="alabama", password="password")
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
-        self.post = Schema.objects.create(
+        self.columns_data = [
+            {"name": "column_1", "type": "job"},
+            {"name": "column_2", "type": "phone_number"},
+            {"name": "column_3", "type": "integer", "value_from": 1, "value_to": 50},
+        ]
+        self.schema = Schema.objects.create(
             user=self.user,
             name="qwerty228",
             column_separator=".",
             string_character="'",
-            fields=[
-                {
-                    "name": "qwertty228",
-                    "type": "integer",
-                    "value_from": 20,
-                    "value_to": 34,
-                }
-            ],
+            fields=self.columns_data
         )
 
     def test_create_schema(self):
@@ -54,6 +53,5 @@ class SchemaApiTestCase(APITestCase):
         }
         url = "http://127.0.0.1:8000/api/schema/1/"
         response = self.client.patch(url, updating_schema, format="json")
-        print(response.content)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), updating_schema)

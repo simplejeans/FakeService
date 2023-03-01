@@ -14,10 +14,10 @@ class SchemaAPIView(ModelViewSet):
     queryset = Schema.objects.all()
     serializer_class = CreateSchemaSerializer
 
-    @action(detail=True, methods=["post"])
+    @action(detail=True, methods=["post"], url_name="generate_data")
     def generate_data(self, request, pk) -> Response:
-        count = request.query_params.get("count", 1)
-        cache_task_key = start_download_dataset_task(user_id=request.user.id, schema_id=pk, row_nums=count)
+        row_nums = int(request.query_params.get("count", 1))
+        cache_task_key = start_download_dataset_task(user_id=request.user.id, schema_id=pk, row_nums=row_nums)
         return Response({"cache_key": cache_task_key}, status=status.HTTP_201_CREATED)
 
 
@@ -28,9 +28,7 @@ class DataSetView(ModelViewSet):
     @action(methods=['get'], detail=True, renderer_classes=(PassthroughRenderer,))
     def download(self, *args, **kwargs):
         instance = self.get_object()
-
         file_handle = instance.file.open()
-
         response = FileResponse(file_handle, content_type='whatever')
         response['Content-Length'] = instance.file.size
         response['Content-Disposition'] = 'attachment; filename="%s"' % instance.file.name
