@@ -29,12 +29,9 @@ class DatasetCreateTestCase(APITestCase):
         self.client.force_authenticate(user=self.user)
 
     @override_settings(
-        CELERY_TASK_EAGER_PROPAGATES=True,
         CELERY_TASK_ALWAYS_EAGER=True,
-        BROKER_BACKEND="memory",
     )
     def test_create_dataset(self):
-
         url = f"http://127.0.0.1:8000/api/schema/{self.schema.pk}/generate_data/?count=50"
         response = self.client.post(url)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)

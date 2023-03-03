@@ -53,5 +53,7 @@ class SchemaApiTestCase(APITestCase):
         }
         url = "http://127.0.0.1:8000/api/schema/1/"
         response = self.client.patch(url, updating_schema, format="json")
+        updated_schema = Schema.objects.last()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), updating_schema)
+        self.assertEqual(updated_schema.fields, updating_schema["fields"])

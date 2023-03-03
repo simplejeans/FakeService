@@ -7,7 +7,7 @@ from schema.models import Schema, Dataset
 from django.core.cache import cache
 from schema.renderers import PassthroughRenderer
 from django.http import FileResponse
-from schema.tasks import start_download_dataset_task
+from schema.tasks import start_generate_data
 
 
 class SchemaAPIView(ModelViewSet):
@@ -17,7 +17,7 @@ class SchemaAPIView(ModelViewSet):
     @action(detail=True, methods=["post"], url_name="generate_data")
     def generate_data(self, request, pk) -> Response:
         row_nums = int(request.query_params.get("count", 1))
-        cache_task_key = start_download_dataset_task(user_id=request.user.id, schema_id=pk, row_nums=row_nums)
+        cache_task_key = start_generate_data(user_id=request.user.id, schema_id=pk, row_nums=row_nums)
         return Response({"cache_key": cache_task_key}, status=status.HTTP_201_CREATED)
 
 
