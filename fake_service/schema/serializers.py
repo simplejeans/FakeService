@@ -1,7 +1,11 @@
 from typing import Dict, Any
 from rest_framework import serializers
-from .choices import SCHEMA_COLUMN_SEPARATOR, SCHEMA_STRING_CHARACTER, SCHEMA_COLUMN_TYPE
-from .models import Schema
+from .choices import (
+    SCHEMA_COLUMN_SEPARATOR,
+    SCHEMA_STRING_CHARACTER,
+    SCHEMA_COLUMN_TYPE,
+)
+from .models import Schema, Dataset
 
 
 class SchemaColumnSerializer(serializers.ModelSerializer):
@@ -12,7 +16,7 @@ class SchemaColumnSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Schema
-        fields = ['name', 'type', 'value_from', 'value_to']
+        fields = ["name", "type", "value_from", "value_to"]
 
     def validate(self, data: Dict[str, Any]) -> Dict[str, Any]:
         if not data["type"] == "integer":
@@ -43,4 +47,19 @@ class CreateSchemaSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Schema
-        fields = ['id', 'name', 'column_separator', 'string_character', 'fields', 'user']
+        fields = [
+            "id",
+            "name",
+            "column_separator",
+            "string_character",
+            "fields",
+            "user",
+        ]
+
+
+class DatasetSerializer(serializers.ModelSerializer):
+    file_name = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = Dataset
+        fields = "__all__"

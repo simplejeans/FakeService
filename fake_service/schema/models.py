@@ -17,3 +17,14 @@ class Schema(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Dataset(models.Model):
+    user = models.ForeignKey(
+        User, related_name="schema_dataset", on_delete=models.CASCADE
+    )
+    file = models.FileField(upload_to="datasets/", null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
