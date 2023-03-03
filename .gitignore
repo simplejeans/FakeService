@@ -2,3 +2,4 @@
 .idea/
 /fake_service/db.sqlite3
 /fake_service/datasets/
+/.idea/
